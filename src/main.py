@@ -1,6 +1,7 @@
 from datetime import datetime
 from glob import glob as globglogabgalab
 from os import path
+from random import choice
 from tqdm import tqdm
 from uuid import uuid1
 import argparse
@@ -37,17 +38,17 @@ def generate_queries(img_dirs):
         images.extend(globglogabgalab(files, root_dir=img_dirs, recursive=True))
     return images
 
-def add_to_pickapic_dataframe(preference_df, root_dir, image_paths0, image_paths1):
+def add_to_pickapic_dataframe(preference_df, image0_dir, image0_path, image1_dir, image1_path):
 
-    image_path0 = path.join(root_dir, image_paths0)
-    image_path1 = path.join(root_dir, image_paths1)
-    are_different = not image_paths0 == image_paths1
+    image_path0 = path.join(image0_dir, image0_path)
+    image_path1 = path.join(image1_dir, image1_path)
+    are_different = not image_path0 == image_path1
     created_at = datetime.now()
     has_label = True
     image_0_uid = str(uuid1())
-    image_0_url = image_paths0
+    image_0_url = image0_path
     image_1_uid = str(uuid1())
-    image_1_url = image_paths1
+    image_1_url = image1_path
     best_image_uid = str(image_1_uid)
     with open(image_path0, "rb") as img0:
         jpg_0 = img0.read()
@@ -91,16 +92,18 @@ def add_to_pickapic_dataframe(preference_df, root_dir, image_paths0, image_paths
 
 def main(args):
     preference_df = create_pickapic_dataframe()
-    img_paths = generate_queries(args.i)
-    for image_path in tqdm(img_paths):
-        add_to_pickapic_dataframe(preference_df, args.i, args.b, image_path)
+    img0_paths = generate_queries(args.b)
+    img1_paths = generate_queries(args.i)
+    for image1_path in tqdm(img1_paths):
+        image0_path = choice(img0_paths)
+        add_to_pickapic_dataframe(preference_df, args.b, image0_path, args.i, image1_path)
     preference_df.to_parquet(args.o)
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-b", type=str, default="M+1\\u00002a.png")
-    parser.add_argument("-i", type=str, default="font2png/exports")
+    parser.add_argument("-b", type=str, default="dummy")
+    parser.add_argument("-i", type=str, default="reference")
     parser.add_argument("-o", type=str, default="export.parquet")
     args = parser.parse_args()
     main(args)
