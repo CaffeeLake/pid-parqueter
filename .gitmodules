@@ -1,0 +1,3 @@
+[submodule "font2png"]
+	path = font2png
+	url = https://github.com/CaffeeLake/font2png.git
