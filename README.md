@@ -1,6 +1,6 @@
 # pid-parqueter
 
-- Paired-Image Dataset Parqueter as Globglogabgalab
+- Paired-Image Dataset Parqueter
 
 ```shell
 python3 -m venv venv
